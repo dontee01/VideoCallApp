@@ -6,10 +6,10 @@
 const socket = io('/host');
 
 var peer = new Peer({
-	host: '192.168.1.192',
+	host: 'localhost',
 	port: location.port || (location.protocol === 'https:' ? 443 : 80),
 	path: '/peerjs'
-})
+});
 
 let myVideoStream;
 let myId;
@@ -17,53 +17,12 @@ let peerConnections = [];
 let peerConnection = {};
 let peerConnectionIds = [];
 
-// peer.on('open', (id) => {
-//   console.log(`Host peer ID: ${id}`);
-  
-//   myId = id;
-// //   socket.emit("newUser" , id , roomID);
-//   socket.emit("hostId" , id , roomID);
-
-//   // Access the device camera and get the stream
-//   navigator.mediaDevices.getUserMedia({
-//     video: true,
-//     audio: true
-//   })
-//   .then((stream) => {
-//     // For every new connection from remote peers, send the stream
-//     peer.on('connection', (conn) => {
-//       conn.on('open', () => {
-//         conn.send(stream);
-//       });
-//     });
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
-// });
-
-
 peer.on('open' , (id)=>{
     myId = id;
     //   socket.emit("newUser" , id , roomID);
     console.log('MYID: ', myId);
     socket.emit("hostId" , id , roomID);
 
-    // socket.on('viewerJoined', (resp) => {
-    //     console.log("new user joined", resp.id)
-    //     console.log("NEW socket joined", resp.sid)
-
-    //     // peerConnections[socket.id] = id;
-    //     // store socket id(sid) from viewer in an array
-    //     peerConnectionIds.push(resp.sid);
-    //     const socketId = resp.sid;
-    //     peerConnection[socketId] = {'socketId': resp.sid, 'peerId': resp.id};
-    //     // console.dir(peerConnection);
-    //     // console.dir(Object.keys(peerConnection).length);
-    //     console.dir(peerConnectionIds);
-    // });
-
-    
   // Access the device camera and get the stream
   navigator.mediaDevices.getUserMedia({
     video: true,
@@ -108,17 +67,9 @@ peer.on('open' , (id)=>{
         let mediaConnection = peer.call(resp.id, stream);
         mediaConnection.on('error', (err) => {
             console.log('MEDIACON_ERR');
+            console.dir(err);
         });
     });
-
-    // peer.on('call', (mediaConnection) => {
-    //     mediaConnection.answer(stream);
-    
-    //     // mediaConnection.on('stream', (remoteStream) => {
-    
-    //     // });
-    // })
-
     
     // stream.getTracks().forEach(function(track) {
     //     track.on('data', function(chunk) {
@@ -140,11 +91,6 @@ socket.on('totalViewers', (data) => {
     viewersTxt.textContent = data;
 });
 
-// socket.on('userJoined' , id=>{
-//   console.log("new user joined")
-
-//   peerConnections[id] = id;
-// })
 console.dir(peerConnection);
 
 socket.on('userDisconnect' , (id)=>{
